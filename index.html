@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+		</style>
+	</head>
+	<body>
+		<script src="/three.js"></script>
+		<script src="/boid.js"></script>
+		<script>
+			const flock = [];
+
+			const scene = new THREE.Scene();
+			const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+			const renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+
+			// const pointLight = new THREE.PointLight( 0xff0000, 1, 300 );
+			// pointLight.position.set( 0, 0, 0 );
+			// scene.add( pointLight );
+
+			// const sphereSize = 1;
+			// const pointLightHelper = new THREE.PointLightHelper( pointLight, sphereSize );
+			// scene.add( pointLightHelper );
+
+			// const material = new THREE.MeshToonMaterial();
+			var geometry = new THREE.PlaneGeometry( 1, 1, 1 );
+			const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+			for (let i = 0; i < 70; i++) {
+				// let geometry = new THREE.IcosahedronGeometry( Math.random()*1.5 );
+				let boid = new Boid( geometry, material);
+				flock.push( boid );
+				scene.add( boid.mesh );	
+			}
+			camera.position.z = 100;
+
+
+			//land
+			geometry = new THREE.PlaneGeometry( 100, 100 );
+			mesh = new THREE.Mesh( geometry, material );
+			mesh.rotateX(-20);
+			mesh.position.set(0, 0,-20);
+			scene.add( mesh );	
+
+			const animate = function () {
+				requestAnimationFrame( animate );
+				
+				for(let boid of flock) {
+					boid.edges();
+					boid.flock(flock);
+					boid.update();
+					
+				}
+
+				renderer.render( scene, camera );
+			};
+
+			animate();
+		</script>
+	</body>
+</html>
